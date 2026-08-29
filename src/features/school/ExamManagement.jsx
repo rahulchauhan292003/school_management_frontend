@@ -180,9 +180,12 @@ const ExamManagement = () => {
                 onChange={(e) => setScheduleForm({ ...scheduleForm, subjectId: parseInt(e.target.value) })}
                 className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-slate-900 dark:text-white"
               >
-                {subjects.map((sub) => (
+                {(subjects.filter((sub) => !sub.class_id || sub.class_id === scheduleForm.classId).length > 0
+                  ? subjects.filter((sub) => !sub.class_id || sub.class_id === scheduleForm.classId)
+                  : subjects
+                ).map((sub) => (
                   <option key={sub.id} value={sub.id}>
-                    {sub.name} ({sub.code})
+                    {sub.name} ({sub.code}){sub.class_name ? ` - ${sub.class_name}` : ''}
                   </option>
                 ))}
               </select>

@@ -143,7 +143,7 @@ const TimetableHomeworkManager = () => {
         api.get(`/school/timetable?classId=${selectedClass}&sectionId=${selectedSection}&date=${selectedDate}`),
         api.get('/school/homework'),
         api.get('/school/classes'),
-        api.get('/school/subjects'),
+        api.get(`/school/subjects${selectedClass ? `?class_id=${selectedClass}` : ''}`),
         api.get('/school/teachers'),
       ]);
       setTimetable(ttRes.data || []);
@@ -230,17 +230,22 @@ const TimetableHomeworkManager = () => {
   };
 
   // Open Timetable Slot Editor Modal for specific day and period
+  const getDisplaySubjects = () => {
+    return subjects.filter((s) => s.class_id === parseInt(selectedClass));
+  };
+
   const openSlotEditor = (day, periodNum, existingSlot = null) => {
     if (!canUpdateTimetable) {
       toast.error('Only Admins, Principals, and Section Class Coordinators can edit this timetable');
       return;
     }
 
+    const availableSubs = getDisplaySubjects();
     setSlotForm({
       id: existingSlot ? existingSlot.id : null,
       classId: selectedClass,
       sectionId: selectedSection,
-      subjectId: existingSlot?.subject_id || (subjects[0] ? subjects[0].id : 1),
+      subjectId: existingSlot?.subject_id || (availableSubs[0] ? availableSubs[0].id : 1),
       teacherId: existingSlot?.teacher_id || (teachers[0] ? teachers[0].id : 1),
       dayOfWeek: day,
       periodNumber: typeof periodNum === 'number' ? periodNum : 1,
@@ -887,11 +892,15 @@ const TimetableHomeworkManager = () => {
                 onChange={(e) => setSlotForm({ ...slotForm, subjectId: parseInt(e.target.value) })}
                 className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-slate-900 dark:text-white font-semibold"
               >
-                {subjects.map((sub) => (
-                  <option key={sub.id} value={sub.id}>
-                    {sub.name} ({sub.code})
-                  </option>
-                ))}
+                {getDisplaySubjects().length > 0 ? (
+                  getDisplaySubjects().map((sub) => (
+                    <option key={sub.id} value={sub.id}>
+                      {sub.name} ({sub.code})
+                    </option>
+                  ))
+                ) : (
+                  <option value="">-- No subjects assigned to this class --</option>
+                )}
               </select>
             </div>
 
@@ -958,11 +967,15 @@ const TimetableHomeworkManager = () => {
                 onChange={(e) => setHwForm({ ...hwForm, subjectId: parseInt(e.target.value) })}
                 className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-slate-900 dark:text-white"
               >
-                {subjects.map((sub) => (
-                  <option key={sub.id} value={sub.id}>
-                    {sub.name}
-                  </option>
-                ))}
+                {getDisplaySubjects().length > 0 ? (
+                  getDisplaySubjects().map((sub) => (
+                    <option key={sub.id} value={sub.id}>
+                      {sub.name} ({sub.code})
+                    </option>
+                  ))
+                ) : (
+                  <option value="">-- No subjects assigned to this class --</option>
+                )}
               </select>
             </div>
             <div>
