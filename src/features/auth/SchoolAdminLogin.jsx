@@ -27,14 +27,14 @@ const SchoolAdminLogin = () => {
   const [formData, setFormData] = useState({
     schoolCode: 'school_a',
     email: 'admin@schoola.com',
-    password: 'Password@123',
+    password: 'SuperAdmin@123',
   });
 
   const handleQuickFill = () => {
     setFormData({
       schoolCode: 'school_a',
       email: 'admin@schoola.com',
-      password: 'Password@123',
+      password: 'SuperAdmin@123',
     });
     toast.success('Loaded School Admin demo credentials');
   };
